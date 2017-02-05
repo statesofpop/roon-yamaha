@@ -117,16 +117,14 @@ function setup_yamaha() {
     if (yamaha.source_control) { yamaha.source_control.destroy(); delete(yamaha.source_control); }
     if (yamaha.svc_volume) { yamaha.svc_volume.destroy();   delete(yamaha.svc_volume);   }
 
-    try {
-        yamaha.hid = new Yamaha();
-        yamaha.hid.discover().then(function(ip){
-            yamaha.ip = ip;
-            update_status();
-        });
-    } catch (e) {
-        // error in discovery. let's quit here for now
-        return
-    }
+    yamaha.hid = new Yamaha();
+    yamaha.hid.discover().then(function(ip){
+        yamaha.ip = ip;
+        update_status();
+    }).catch(function (error){
+        yamaha.hid = undefined;
+        svc_status.set_status("Could not find Yamaha device.", true)
+    });
     
     try {
         if (mysettings.device_name == yamaha.default_device_name) {
@@ -153,7 +151,7 @@ function setup_yamaha() {
           let newvol = mode == "absolute" ? value : (yamaha.volume + value);
           if      (newvol < this.state.volume_min) newvol = this.state.volume_min;
           else if (newvol > this.state.volume_max) newvol = this.state.volume_max;
-          yamaha.hid.setVolume(value*10);
+          yamaha.hid.setVolume( value * 10 ); // node-yamaha-avr sends full ints
           yamaha.svc_volume.update_state({ volume_value: newvol });
           req.send_complete("Success");
         },
