@@ -148,7 +148,7 @@ function setup_yamaha() {
             is_muted:     0
         },
         set_volume: function (req, mode, value) {
-          let newvol = mode == "absolute" ? value : (yamaha.volume + value);
+          let newvol = mode == "absolute" ? value : (this.state.volume_value + value);
           if      (newvol < this.state.volume_min) newvol = this.state.volume_min;
           else if (newvol > this.state.volume_max) newvol = this.state.volume_max;
           yamaha.hid.setVolume( value * 10 ); // node-yamaha-avr sends full ints
