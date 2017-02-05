@@ -67,8 +67,7 @@ function makelayout(settings) {
         setting: "receiver_url"
     };
 
-    // FIXME: eh, no this is not how it's done
-    if (settings.receiver_url != "" && settings.receiver_url.length < 10) {
+    if (settings.receiver_url != "" && settings.receiver_url.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/) === null) {
         v.error = "Please enter a valid IP-address";
         l.has_error = true; 
     }
@@ -116,7 +115,7 @@ function setup_yamaha() {
     if (yamaha.source_control) { yamaha.source_control.destroy(); delete(yamaha.source_control); }
     if (yamaha.svc_volume) { yamaha.svc_volume.destroy();   delete(yamaha.svc_volume);   }
 
-    yamaha.hid = new Yamaha();
+    yamaha.hid = new Yamaha(mysettings.receiver_url);
     yamaha.hid.discover().then(function(ip){
         yamaha.ip = ip;
         update_status();
