@@ -28,7 +28,15 @@ var svc_settings = new RoonApiSettings(roon);
 var mysettings = roon.load_config("settings") || {
     receiver_url: "",
     input:        yamaha.default_input,
-    device_name:  yamaha.default_device_name
+    device_name:  yamaha.default_device_name,
+    input_list:   [
+        { title: "HDMI 1", value: "HDMI1" },
+        { title: "HDMI 2", value: "HDMI2" },
+        { title: "HDMI 3", value: "HDMI3" },
+        { title: "HDMI 4", value: "HDMI4" },
+        { title: "HDMI 5", value: "HDMI5" },
+        { title: "HDMI 6", value: "HDMI6" }
+    ]
 };
 
 function makelayout(settings) {
@@ -48,16 +56,7 @@ function makelayout(settings) {
     l.layout.push({
         type:    "dropdown",
         title:   "Input",
-        values:  [
-            // it should be possible to populate this list
-            // with the actual inputs
-            { title: "HDMI 1", value: "HDMI1" },
-            { title: "HDMI 2", value: "HDMI2" },
-            { title: "HDMI 3", value: "HDMI3" },
-            { title: "HDMI 4", value: "HDMI4" },
-            { title: "HDMI 5", value: "HDMI5" },
-            { title: "HDMI 6", value: "HDMI6" }
-        ],
+        values:   mysettings.input_list,
         setting: "input"
     });
 
@@ -127,12 +126,20 @@ function setup_yamaha() {
     });
     
     try {
-        if (mysettings.device_name == yamaha.default_device_name) {
-            yamaha.hid.getSystemConfig().then(function(config) {
-              mysettings.device_name = config["YAMAHA_AV"]["System"][0]["Config"][0]["Model_Name"][0];
-              update_status();
-            })
-        }
+        yamaha.hid.getSystemConfig().then(function(config) {
+            if (mysettings.device_name == yamaha.default_device_name) {
+                mysettings.device_name = config["YAMAHA_AV"]["System"][0]["Config"][0]["Model_Name"][0];
+            }
+            let inputs = config["YAMAHA_AV"]["System"][0]["Config"][0]["Name"][0]["Input"][0];
+            mysettings.input_list = [];
+            for (let key in inputs) {
+                mysettings.input_list.push({
+                    "title": inputs[key][0].trim(),
+                    "value": key.replace("_", "")
+                })
+            }
+            update_status();
+        })
     } catch(e) {
         // getting the device name is not critical, so let's continue
     }
