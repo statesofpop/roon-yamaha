@@ -13,12 +13,18 @@ first. should work with node.js >= 7.5.0.
 
 ### known issues
 
-* source-control (standby on/off) not actually functional yet
-* little error handling
-* manual ip-address not validated
+* dragging volume slider leads to 'random' volume changes on the device
+* manual ip-address not used
 * two instances seem to be created
+* too little error handling
+* source-control (standby on)
 
 ### improvements / to do
 
-* populate input list from receiver config instead of static list
 * reflect volume and other status changes on receiver in roon
+
+
+### thanks / credits
+
+https://github.com/ttu/node-yamaha-avr
+https://github.com/RoonLabs/node-roon-api
