@@ -11,7 +11,7 @@ var roon = new RoonApi({
     display_version:     "0.0.4",
     publisher:           'states of pop',
     email:               'hi@statesofpop.de',
-    website:             'https://github.com/statesofpop/roon-yamaha-control'
+    website:             'https://github.com/statesofpop/roon-yamaha'
 });
 
 var yamaha = {
