@@ -27,4 +27,5 @@ first. should work with node.js >= 7.5.0.
 ### thanks / credits
 
 https://github.com/ttu/node-yamaha-avr
+
 https://github.com/RoonLabs/node-roon-api
