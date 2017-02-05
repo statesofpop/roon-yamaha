@@ -3,7 +3,7 @@ a roon extension to control yamaha's network-enabled av receivers
 
 ### why?
 
-on fixed-volume connections (like hdmi) this extension let's
+on fixed-volume connections (like hdmi) this extension lets
 you access the receiver's volume and mute controls.
 
 ### how to use
