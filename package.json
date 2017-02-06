@@ -1,8 +1,9 @@
 {
     "name": "roon-yamaha-control",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "Roon Extension to control Yamaha Receivers",
-    "main": "app.js",
+    "keywords": ["roon", "extension", "yamaha"],
+    "main": "index.html",
     "author": "Christopher Dickes",
     "license": "Apache-2.0",
     "dependencies": {
