@@ -14,13 +14,12 @@ first. should work with node.js >= 7.5.0.
 ### known issues
 
 * manual ip-address not used
-* two instances seem to be created
+* multiple instances seem to be created
 * too little error handling
 
 ### improvements / to do
 
-* source-control (standby on)
-
+* support yamaha scenes in addition to inputs
 
 ### thanks / credits
 

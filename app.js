@@ -222,8 +222,9 @@ function setup_yamaha() {
             req.send_complete("Success");
         },
         standby: function (req) {
-            this.state.status = "standby";
-            yamaha.hid.setPower("on");
+            let state = this.state.status;
+            this.state.status = (state == "selected")? "standby": "selected";
+            yamaha.hid.setPower((state == "selected")? "off": "on");
             req.send_complete("Success");
         }
     });
