@@ -20,6 +20,7 @@ first. should work with node.js >= 7.5.0.
 ### improvements / to do
 
 * support yamaha scenes in addition to inputs
+* set vol/mute state on init
 
 ### thanks / credits
 

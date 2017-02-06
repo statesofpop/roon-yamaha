@@ -25,7 +25,7 @@ var svc_volume = new RoonApiVolumeControl(roon);
 var svc_source = new RoonApiSourceControl(roon);
 var svc_settings = new RoonApiSettings(roon);
 
-var volTimeout;
+var volTimeout = null;
 
 var mysettings = roon.load_config("settings") || {
     receiver_url: "",
@@ -115,7 +115,7 @@ function check_status() {
         yamaha.hid.getStatus()
         .then( (result) => {
             // exit if a change through roon is in progress
-            if (volTimeout !== null) return;
+            if (volTimeout) return;
             // this seems to only get called on success
             let vol_status = result["YAMAHA_AV"]["Main_Zone"][0]["Basic_Status"][0]["Volume"][0];
             // should get current state first, to see if update is necessary
