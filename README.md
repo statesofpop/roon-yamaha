@@ -19,7 +19,6 @@ first. should work with node.js >= 7.5.0.
 
 ### improvements / to do
 
-* reflect volume and other status changes on receiver in roon
 * source-control (standby on)
 
 

@@ -8,7 +8,7 @@ var RoonApi = require("node-roon-api"),
 var roon = new RoonApi({
     extension_id:        'com.statesofpop.roon-yamaha',
     display_name:        "Yamaha Control",
-    display_version:     "0.0.4",
+    display_version:     "0.0.5",
     publisher:           'states of pop',
     email:               'hi@statesofpop.de',
     website:             'https://github.com/statesofpop/roon-yamaha'
@@ -24,6 +24,8 @@ var svc_status = new RoonApiStatus(roon);
 var svc_volume = new RoonApiVolumeControl(roon);
 var svc_source = new RoonApiSourceControl(roon);
 var svc_settings = new RoonApiSettings(roon);
+
+var volTimeout;
 
 var mysettings = roon.load_config("settings") || {
     receiver_url: "",
@@ -108,18 +110,49 @@ function update_status() {
     }
 }
 
+function check_status() {
+    if (yamaha.hid) {
+        yamaha.hid.getStatus()
+        .then( (result) => {
+            // this seems to only get called on success
+            let vol_status = result["YAMAHA_AV"]["Main_Zone"][0]["Basic_Status"][0]["Volume"][0];
+            // should get current state first, to see if update is necessary
+            yamaha.svc_volume.update_state({
+                volume_value: vol_status["Lvl"][0]["Val"] / 10,
+                is_muted: (vol_status["Mute"] == "On")
+            });
+            update_status()
+        })
+        .catch( (error) => {
+            // this seems not to get called when device is offline
+            yamaha.hid == "";
+            svc_status.set_status("Could not find Yamaha device.", true);
+        });
+    }
+}
+
 function setup_yamaha() {
     if (yamaha.hid) {
         yamaha.hid = undefined;
     }
-    if (yamaha.source_control) { yamaha.source_control.destroy(); delete(yamaha.source_control); }
-    if (yamaha.svc_volume) { yamaha.svc_volume.destroy();   delete(yamaha.svc_volume);   }
+    if (yamaha.source_control) {
+        yamaha.source_control.destroy();
+        delete(yamaha.source_control);
+    }
+    if (yamaha.svc_volume) {
+        yamaha.svc_volume.destroy();
+        delete(yamaha.svc_volume);
+    }
 
     yamaha.hid = new Yamaha(mysettings.receiver_url);
-    yamaha.hid.discover().then(function(ip){
+    // should check whether the device is behind the given url
+    // only then start to discover.
+    yamaha.hid.discover()
+    .then( (ip) => {
         yamaha.ip = ip;
         update_status();
-    }).catch(function (error){
+    })
+    .catch( (error) => {
         yamaha.hid = undefined;
         svc_status.set_status("Could not find Yamaha device.", true)
     });
@@ -154,12 +187,16 @@ function setup_yamaha() {
             is_muted:     0
         },
         set_volume: function (req, mode, value) {
-          let newvol = mode == "absolute" ? value : (yamaha.volume + value);
-          if      (newvol < this.state.volume_min) newvol = this.state.volume_min;
-          else if (newvol > this.state.volume_max) newvol = this.state.volume_max;
-          yamaha.hid.setVolume( value * 10 ); // node-yamaha-avr sends full ints
-          yamaha.svc_volume.update_state({ volume_value: newvol });
-          req.send_complete("Success");
+            let newvol = mode == "absolute" ? value : (yamaha.volume + value);
+            if      (newvol < this.state.volume_min) newvol = this.state.volume_min;
+            else if (newvol > this.state.volume_max) newvol = this.state.volume_max;
+            yamaha.svc_volume.update_state({ volume_value: newvol });
+            clearTimeout(volTimeout);
+            volTimeout = setTimeout(() => {
+                // node-yamaha-avr sends full ints
+                yamaha.hid.setVolume( value * 10 );
+            }, 500)
+            req.send_complete("Success");
         },
         set_mute: function (req, action) {
             let is_muted = !this.state.is_muted;
@@ -193,6 +230,7 @@ roon.init_services({
 });
 
 setInterval(() => { if (!yamaha.hid) setup_yamaha(); }, 1000);
+setInterval(() => { if (yamaha.hid) check_status(); }, 5000);
 
 roon.start_discovery();
 
