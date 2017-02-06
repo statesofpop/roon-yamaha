@@ -114,6 +114,8 @@ function check_status() {
     if (yamaha.hid) {
         yamaha.hid.getStatus()
         .then( (result) => {
+            // exit if a change through roon is in progress
+            if (volTimeout !== null) return;
             // this seems to only get called on success
             let vol_status = result["YAMAHA_AV"]["Main_Zone"][0]["Basic_Status"][0]["Volume"][0];
             // should get current state first, to see if update is necessary
@@ -195,6 +197,8 @@ function setup_yamaha() {
             volTimeout = setTimeout(() => {
                 // node-yamaha-avr sends full ints
                 yamaha.hid.setVolume( value * 10 );
+                clearTimeout(volTimeout);
+                volTimeout = null;
             }, 500)
             req.send_complete("Success");
         },
