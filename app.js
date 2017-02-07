@@ -8,7 +8,7 @@ var RoonApi = require("node-roon-api"),
 var roon = new RoonApi({
     extension_id:        'com.statesofpop.roon-yamaha',
     display_name:        "Yamaha Control",
-    display_version:     "0.0.6",
+    display_version:     "0.0.7",
     publisher:           'states of pop',
     email:               'hi@statesofpop.de',
     website:             'https://github.com/statesofpop/roon-yamaha'
