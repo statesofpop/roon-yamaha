@@ -10,14 +10,22 @@
   "main": "app.js",
   "bg-script": "background.js",
   "window": {
-    "show_in_taskbar": false,
+    "show_in_taskbar": true,
     "plugin": false
+  },
+  "platformOverrides": {
+      "win": {
+          "show_in_taskbar": true
+      },
+      "osx": {
+          "show_in_taskbar": false
+      }
   },
   "author": "Christopher Dickes",
   "license": "Apache-2.0",
   "dependencies": {
     "node-yamaha-avr": "github:ttu/node-yamaha-avr",
-    "node-roon-api": "github:roonlabs/node-roon-api",
+    "node-roon-api": "github:statesofpop/node-roon-api",
     "node-roon-api-status": "github:roonlabs/node-roon-api-status",
     "node-roon-api-source-control": "github:roonlabs/node-roon-api-source-control",
     "node-roon-api-volume-control": "github:roonlabs/node-roon-api-volume-control",
